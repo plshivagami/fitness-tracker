@@ -16,9 +16,11 @@ export default function useMutation(method, resource, tagsToInvalidate) {
     setLoading(true);
     setError(null);
     try {
-      const result = await request(resource, {
+      const endpoint =
+        typeof resource === "function" ? resource(body) : resource;
+      const result = await request(endpoint, {
         method,
-        body: JSON.stringify(body),
+        body: method !== "DELETE" ? JSON.stringify(body) : undefined,
       });
       setData(result);
       invalidateTags(tagsToInvalidate);
